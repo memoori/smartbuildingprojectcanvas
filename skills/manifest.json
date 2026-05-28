@@ -1,0 +1,148 @@
+{
+  "version": "1.0",
+  "generated": "2026-05-28T00:00:00Z",
+  "skills": {
+    "technologies": [
+      {
+        "id": "bms-bas",
+        "path": "technologies/bms-bas/_index.md",
+        "rfi_guidance": "technologies/bms-bas/rfi-guidance.md",
+        "title": "Building Management System / Building Automation System",
+        "tags": ["bms", "bas", "building-automation", "controls", "biot"],
+        "building_types": ["office", "hospital", "mixed-use", "hotel", "retail", "data-center"],
+        "outcomes": ["reduce-energy-costs", "improve-tenant-experience", "achieve-leed"]
+      },
+      {
+        "id": "hvac-optimization",
+        "path": "technologies/hvac-optimization/_index.md",
+        "rfi_guidance": "technologies/hvac-optimization/rfi-guidance.md",
+        "title": "HVAC Controls & Optimization",
+        "tags": ["hvac", "heating", "cooling", "ventilation"],
+        "building_types": ["office", "hospital", "mixed-use", "hotel", "retail", "data-center"],
+        "outcomes": ["reduce-energy-costs", "improve-tenant-experience", "achieve-leed"]
+      },
+      {
+        "id": "access-control",
+        "path": "technologies/access-control/_index.md",
+        "rfi_guidance": "technologies/access-control/rfi-guidance.md",
+        "title": "Access Control & Physical Security",
+        "tags": ["access-control", "security", "identity", "piam", "credentials"],
+        "building_types": ["office", "hospital", "mixed-use", "hotel", "retail"],
+        "outcomes": ["improve-tenant-experience", "reduce-energy-costs"]
+      },
+      {
+        "id": "occupancy-sensing",
+        "path": "technologies/occupancy-sensing/_index.md",
+        "rfi_guidance": "technologies/occupancy-sensing/rfi-guidance.md",
+        "title": "Occupancy Sensing & Space Utilization Analytics",
+        "tags": ["occupancy", "sensors", "space-utilization", "people-counting"],
+        "building_types": ["office", "hospital", "mixed-use", "retail"],
+        "outcomes": ["reduce-energy-costs", "improve-tenant-experience"]
+      },
+      {
+        "id": "energy-management-emis",
+        "path": "technologies/energy-management-emis/_index.md",
+        "rfi_guidance": "technologies/energy-management-emis/rfi-guidance.md",
+        "title": "Energy Management & Information Systems (EMIS)",
+        "tags": ["energy", "emis", "metering", "analytics", "grid-interactive"],
+        "building_types": ["office", "hospital", "mixed-use", "retail", "data-center"],
+        "outcomes": ["reduce-energy-costs", "achieve-leed"]
+      }
+    ],
+    "building_types": [
+      {
+        "id": "office",
+        "path": "building-types/office.md",
+        "title": "Office Buildings"
+      },
+      {
+        "id": "hospital",
+        "path": "building-types/hospital.md",
+        "title": "Healthcare Facilities"
+      },
+      {
+        "id": "mixed-use",
+        "path": "building-types/mixed-use.md",
+        "title": "Mixed-Use Developments"
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "reduce-energy-costs",
+        "path": "outcomes/reduce-energy-costs.md",
+        "title": "Reduce Energy Costs"
+      },
+      {
+        "id": "improve-tenant-experience",
+        "path": "outcomes/improve-tenant-experience.md",
+        "title": "Improve Tenant Experience"
+      },
+      {
+        "id": "achieve-leed",
+        "path": "outcomes/achieve-leed.md",
+        "title": "Achieve LEED Certification"
+      }
+    ],
+    "standards": [
+      {
+        "id": "bacnet",
+        "path": "standards/bacnet.md",
+        "title": "BACnet (ASHRAE Standard 135)"
+      },
+      {
+        "id": "mqtt",
+        "path": "standards/mqtt.md",
+        "title": "MQTT (Message Queuing Telemetry Transport)"
+      },
+      {
+        "id": "nist-800-53",
+        "path": "standards/nist-800-53.md",
+        "title": "NIST 800-53 & Building Cybersecurity Standards"
+      }
+    ],
+    "cross_cutting": [
+      {
+        "id": "msi-role",
+        "path": "cross-cutting/msi-role.md",
+        "title": "The Role of a Master Systems Integrator (MSI)"
+      },
+      {
+        "id": "market-statistics",
+        "path": "cross-cutting/market-statistics.md",
+        "title": "Smart Building Market Statistics & Benchmarks"
+      }
+    ],
+    "templates": [
+      {
+        "id": "rfi-template-introduction",
+        "path": "templates/rfi-section-templates/01-introduction-project-context.md",
+        "title": "RFI Section 1: Introduction & Project Context"
+      },
+      {
+        "id": "rfi-template-technology-requirements",
+        "path": "templates/rfi-section-templates/02-technology-requirements.md",
+        "title": "RFI Section 2: Technology Requirements & Use Cases"
+      },
+      {
+        "id": "rfi-template-vendor-information",
+        "path": "templates/rfi-section-templates/03-vendor-information-requested.md",
+        "title": "RFI Section 3: Vendor Information Requested"
+      },
+      {
+        "id": "rfi-template-performance-cost",
+        "path": "templates/rfi-section-templates/04-performance-cost.md",
+        "title": "RFI Section 4: Performance & Cost Information Requested"
+      },
+      {
+        "id": "rfi-template-commercialization",
+        "path": "templates/rfi-section-templates/05-commercialization-compliance.md",
+        "title": "RFI Section 5: Commercialization & Compliance"
+      },
+      {
+        "id": "rfi-template-submission",
+        "path": "templates/rfi-section-templates/06-submission-evaluation.md",
+        "title": "RFI Section 6: Submission Requirements & Evaluation Criteria"
+      }
+    ]
+  }
+}

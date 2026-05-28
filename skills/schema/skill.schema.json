@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Smart Building Skill",
+  "description": "Schema for YAML frontmatter in skill markdown files",
+  "type": "object",
+  "required": ["id", "title", "category", "last_updated"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique kebab-case identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["technology", "building-type", "outcome", "standard", "cross-cutting", "template"],
+      "description": "Skill category"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Searchable tags"
+    },
+    "building_types": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Applicable building types (references building-type skill IDs)"
+    },
+    "outcomes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Related outcomes (references outcome skill IDs)"
+    },
+    "standards": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Related standards (references standard skill IDs)"
+    },
+    "canvas_sections": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 1, "maximum": 7 },
+      "description": "Which canvas sections (1-7) this skill informs"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last content update (YYYY-MM-DD)"
+    },
+    "version": {
+      "type": "string",
+      "description": "Content version"
+    }
+  },
+  "additionalProperties": false
+}
