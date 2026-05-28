@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const BUILDING_TYPES = [
   { id: "office", label: "Office", emoji: "🏢" },
@@ -41,7 +42,9 @@ const PROJECT_TYPES = [
 type Step = "basics" | "outcomes" | "technologies" | "review";
 
 export default function NewProjectPage() {
+  const router = useRouter();
   const [step, setStep] = useState<Step>("basics");
+  const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
     name: "",
     company: "",
@@ -420,9 +423,24 @@ export default function NewProjectPage() {
               Back
             </button>
             <button
-              className="rounded-lg bg-[#82b129] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#6a9422] transition-colors"
+              disabled={creating}
+              onClick={async () => {
+                setCreating(true);
+                try {
+                  const res = await fetch("/api/projects", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(form),
+                  });
+                  const data = await res.json();
+                  router.push(`/project/${data.id}`);
+                } catch {
+                  setCreating(false);
+                }
+              }}
+              className="rounded-lg bg-[#82b129] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#6a9422] disabled:opacity-60 transition-colors"
             >
-              Create Project &amp; Start Canvas
+              {creating ? "Creating..." : "Create Project & Start Canvas"}
             </button>
           </div>
         </div>
