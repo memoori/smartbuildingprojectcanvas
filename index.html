@@ -197,6 +197,86 @@
     .field select { cursor: pointer; }
 
     /* Checkbox group */
+    /* Mode toggle */
+    .mode-toggle {
+      display: flex;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+      margin-bottom: 1rem;
+    }
+    .mode-toggle button {
+      flex: 1;
+      padding: .5rem .75rem;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-light);
+      transition: background .15s, color .15s, box-shadow .15s;
+    }
+    .mode-toggle button.active {
+      background: var(--card-bg);
+      color: var(--navy);
+      box-shadow: 0 1px 3px rgba(0,0,0,.1);
+      font-weight: 600;
+    }
+
+    /* Building cards in portfolio mode */
+    .building-list { display: flex; flex-direction: column; gap: .75rem; }
+    .building-entry {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      background: var(--bg);
+      position: relative;
+    }
+    .building-entry-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .5rem;
+    }
+    .building-entry-header span {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .building-remove {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      font-size: .75rem;
+      padding: .25rem .5rem;
+      border-radius: 4px;
+      transition: color .15s, background .15s;
+    }
+    .building-remove:hover { color: var(--pink); background: rgba(232,61,125,.08); }
+    .building-entry .setup-grid { gap: .5rem; }
+    .add-building-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+      width: 100%;
+      padding: .6rem;
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-light);
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .add-building-btn:hover { border-color: var(--navy); color: var(--navy); }
+
     .checkbox-group-label {
       display: block;
       font-size: .75rem;
@@ -729,49 +809,75 @@
           <label for="projectDate">Date</label>
           <input type="date" id="projectDate">
         </div>
-        <div class="field">
-          <label for="buildingType">Building Type</label>
-          <select id="buildingType">
-            <option value="">Select...</option>
-            <option value="office">Office</option>
-            <option value="hospital">Hospital / Healthcare</option>
-            <option value="mixed-use">Mixed-Use</option>
-            <option value="hotel">Hotel / Hospitality</option>
-            <option value="retail">Retail</option>
-            <option value="school">School / University</option>
-            <option value="data-center">Data Center</option>
-            <option value="stadium">Stadium / Arena</option>
-            <option value="other">Other</option>
-          </select>
+        <div class="full">
+          <label style="display:block;font-size:.75rem;font-weight:600;color:var(--text-light);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.04em">Project Scope</label>
+          <div class="mode-toggle" id="modeToggle">
+            <button type="button" data-mode="single" class="active">Single Building</button>
+            <button type="button" data-mode="portfolio">Property Portfolio</button>
+          </div>
         </div>
-        <div class="field">
-          <label for="buildingSize">Building Size (sq ft)</label>
-          <input type="number" id="buildingSize" placeholder="e.g. 150000">
+      </div>
+
+      <!-- Single building fields -->
+      <div id="singleBuildingFields">
+        <div class="setup-grid">
+          <div class="field">
+            <label for="buildingType">Building Type</label>
+            <select id="buildingType">
+              <option value="">Select...</option>
+              <option value="office">Office</option>
+              <option value="hospital">Hospital / Healthcare</option>
+              <option value="mixed-use">Mixed-Use</option>
+              <option value="hotel">Hotel / Hospitality</option>
+              <option value="retail">Retail</option>
+              <option value="school">School / University</option>
+              <option value="data-center">Data Center</option>
+              <option value="stadium">Stadium / Arena</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="buildingSize">Building Size (sq ft)</label>
+            <input type="number" id="buildingSize" placeholder="e.g. 150000">
+          </div>
+          <div class="field">
+            <label for="buildingAge">Building Age</label>
+            <select id="buildingAge">
+              <option value="">Select...</option>
+              <option value="new-construction">New Construction</option>
+              <option value="1-5">1-5 years</option>
+              <option value="5-15">5-15 years</option>
+              <option value="15-30">15-30 years</option>
+              <option value="30+">30+ years</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="location">Location</label>
+            <input type="text" id="location" placeholder="e.g. London, UK">
+          </div>
+          <div class="field">
+            <label for="buildingName">Building Name</label>
+            <input type="text" id="buildingName" placeholder="e.g. One Canada Square">
+          </div>
+          <div class="field">
+            <label for="projectType">Project Type</label>
+            <select id="projectType">
+              <option value="">Select...</option>
+              <option value="new-construction">New Construction</option>
+              <option value="major-renovation">Major Renovation</option>
+              <option value="technology-overlay">Technology Overlay (existing building)</option>
+            </select>
+          </div>
         </div>
-        <div class="field">
-          <label for="buildingAge">Building Age</label>
-          <select id="buildingAge">
-            <option value="">Select...</option>
-            <option value="new-construction">New Construction</option>
-            <option value="1-5">1-5 years</option>
-            <option value="5-15">5-15 years</option>
-            <option value="15-30">15-30 years</option>
-            <option value="30+">30+ years</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="location">Location</label>
-          <input type="text" id="location" placeholder="e.g. London, UK">
-        </div>
-        <div class="field">
-          <label for="projectType">Project Type</label>
-          <select id="projectType">
-            <option value="">Select...</option>
-            <option value="new-construction">New Construction</option>
-            <option value="major-renovation">Major Renovation</option>
-            <option value="technology-overlay">Technology Overlay (existing building)</option>
-          </select>
-        </div>
+      </div>
+
+      <!-- Portfolio building list (hidden by default) -->
+      <div id="portfolioFields" style="display:none">
+        <div class="building-list" id="buildingList"></div>
+        <button type="button" class="add-building-btn" onclick="addBuilding()" style="margin-top:.75rem">+ Add Building</button>
+      </div>
+
+      <div class="setup-grid" style="margin-top:.75rem">
         <div class="full" style="margin-top:.25rem">
           <span class="checkbox-group-label">Desired Outcomes (select all that apply)</span>
           <div class="checkbox-group" id="outcomesGroup">
@@ -1131,7 +1237,10 @@ function defaultState() {
   const sections = {};
   SECTIONS.forEach(s => { sections[s.number] = { notes: '', completed: false }; });
   return {
-    project: { name: '', company: '', date: '', buildingType: '', buildingSize: '', buildingAge: '', location: '', projectType: '' },
+    project: { name: '', company: '', date: '', projectType: '' },
+    mode: 'single',
+    building: { name: '', buildingType: '', buildingSize: '', buildingAge: '', location: '' },
+    buildings: [],
     outcomes: [],
     technologies: [],
     sections,
@@ -1148,6 +1257,20 @@ function loadState() {
     if (raw) {
       const saved = JSON.parse(raw);
       state = { ...defaultState(), ...saved, sections: { ...defaultState().sections, ...saved.sections } };
+      // Migrate old single-object format where building fields lived on project
+      if (saved.project && saved.project.buildingType && !saved.building) {
+        state.building = {
+          name: saved.project.buildingName || '',
+          buildingType: saved.project.buildingType || '',
+          buildingSize: saved.project.buildingSize || '',
+          buildingAge: saved.project.buildingAge || '',
+          location: saved.project.location || ''
+        };
+        state.project = { name: saved.project.name || '', company: saved.project.company || '', date: saved.project.date || '', projectType: saved.project.projectType || '' };
+      }
+      if (!state.buildings) state.buildings = [];
+      if (!state.building) state.building = defaultState().building;
+      if (!state.mode) state.mode = 'single';
     }
   } catch (e) { /* ignore */ }
 }
@@ -1161,11 +1284,29 @@ function renderSetup() {
   document.getElementById('projectName').value = state.project.name;
   document.getElementById('company').value = state.project.company;
   document.getElementById('projectDate').value = state.project.date;
-  document.getElementById('buildingType').value = state.project.buildingType;
-  document.getElementById('buildingSize').value = state.project.buildingSize;
-  document.getElementById('buildingAge').value = state.project.buildingAge;
-  document.getElementById('location').value = state.project.location;
   document.getElementById('projectType').value = state.project.projectType;
+
+  // Mode toggle
+  document.querySelectorAll('#modeToggle button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === state.mode);
+  });
+
+  // Single building fields
+  const singleEl = document.getElementById('singleBuildingFields');
+  const portfolioEl = document.getElementById('portfolioFields');
+  if (state.mode === 'single') {
+    singleEl.style.display = '';
+    portfolioEl.style.display = 'none';
+    document.getElementById('buildingName').value = state.building.name;
+    document.getElementById('buildingType').value = state.building.buildingType;
+    document.getElementById('buildingSize').value = state.building.buildingSize;
+    document.getElementById('buildingAge').value = state.building.buildingAge;
+    document.getElementById('location').value = state.building.location;
+  } else {
+    singleEl.style.display = 'none';
+    portfolioEl.style.display = '';
+    renderBuildingList();
+  }
 
   document.querySelectorAll('#outcomesGroup .checkbox-pill').forEach(pill => {
     const val = pill.dataset.value;
@@ -1184,6 +1325,98 @@ function renderSetup() {
   const chev = document.getElementById('setupChevron');
   body.style.display = state.setupOpen ? '' : 'none';
   chev.classList.toggle('open', state.setupOpen);
+}
+
+function newBuilding() {
+  return { name: '', buildingType: '', buildingSize: '', buildingAge: '', location: '', projectType: '' };
+}
+
+function renderBuildingList() {
+  const list = document.getElementById('buildingList');
+  list.innerHTML = '';
+  if (state.buildings.length === 0) {
+    addBuilding();
+    return;
+  }
+  state.buildings.forEach((b, i) => {
+    const entry = document.createElement('div');
+    entry.className = 'building-entry';
+    entry.innerHTML = `
+      <div class="building-entry-header">
+        <span>Building ${i + 1}${b.name ? ' — ' + b.name : ''}</span>
+        ${state.buildings.length > 1 ? `<button type="button" class="building-remove" onclick="removeBuilding(${i})">Remove</button>` : ''}
+      </div>
+      <div class="setup-grid">
+        <div class="field">
+          <label>Building Name</label>
+          <input type="text" value="${esc(b.name)}" placeholder="e.g. HQ Tower" oninput="updateBuilding(${i},'name',this.value)">
+        </div>
+        <div class="field">
+          <label>Building Type</label>
+          <select onchange="updateBuilding(${i},'buildingType',this.value)">
+            <option value="">Select...</option>
+            <option value="office" ${b.buildingType==='office'?'selected':''}>Office</option>
+            <option value="hospital" ${b.buildingType==='hospital'?'selected':''}>Hospital / Healthcare</option>
+            <option value="mixed-use" ${b.buildingType==='mixed-use'?'selected':''}>Mixed-Use</option>
+            <option value="hotel" ${b.buildingType==='hotel'?'selected':''}>Hotel / Hospitality</option>
+            <option value="retail" ${b.buildingType==='retail'?'selected':''}>Retail</option>
+            <option value="school" ${b.buildingType==='school'?'selected':''}>School / University</option>
+            <option value="data-center" ${b.buildingType==='data-center'?'selected':''}>Data Center</option>
+            <option value="stadium" ${b.buildingType==='stadium'?'selected':''}>Stadium / Arena</option>
+            <option value="other" ${b.buildingType==='other'?'selected':''}>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Size (sq ft)</label>
+          <input type="number" value="${esc(b.buildingSize)}" placeholder="e.g. 150000" oninput="updateBuilding(${i},'buildingSize',this.value)">
+        </div>
+        <div class="field">
+          <label>Building Age</label>
+          <select onchange="updateBuilding(${i},'buildingAge',this.value)">
+            <option value="">Select...</option>
+            <option value="new-construction" ${b.buildingAge==='new-construction'?'selected':''}>New Construction</option>
+            <option value="1-5" ${b.buildingAge==='1-5'?'selected':''}>1-5 years</option>
+            <option value="5-15" ${b.buildingAge==='5-15'?'selected':''}>5-15 years</option>
+            <option value="15-30" ${b.buildingAge==='15-30'?'selected':''}>15-30 years</option>
+            <option value="30+" ${b.buildingAge==='30+'?'selected':''}>30+ years</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Location</label>
+          <input type="text" value="${esc(b.location)}" placeholder="e.g. London, UK" oninput="updateBuilding(${i},'location',this.value)">
+        </div>
+        <div class="field">
+          <label>Project Type</label>
+          <select onchange="updateBuilding(${i},'projectType',this.value)">
+            <option value="">Select...</option>
+            <option value="new-construction" ${b.projectType==='new-construction'?'selected':''}>New Construction</option>
+            <option value="major-renovation" ${b.projectType==='major-renovation'?'selected':''}>Major Renovation</option>
+            <option value="technology-overlay" ${b.projectType==='technology-overlay'?'selected':''}>Technology Overlay (existing building)</option>
+          </select>
+        </div>
+      </div>
+    `;
+    list.appendChild(entry);
+  });
+}
+
+function esc(s) { return String(s || '').replace(/"/g, '&quot;'); }
+
+function addBuilding() {
+  state.buildings.push(newBuilding());
+  saveState();
+  renderBuildingList();
+}
+
+function removeBuilding(i) {
+  state.buildings.splice(i, 1);
+  saveState();
+  renderBuildingList();
+}
+
+function updateBuilding(i, key, value) {
+  state.buildings[i][key] = value;
+  saveState();
 }
 
 function renderSections() {
@@ -1325,16 +1558,33 @@ function toggleComplete(num) {
 
 // Setup field bindings
 function bindSetupFields() {
-  const fields = ['projectName','company','projectDate','buildingType','buildingSize','buildingAge','location','projectType'];
-  const keys = ['name','company','date','buildingType','buildingSize','buildingAge','location','projectType'];
-  fields.forEach((id, i) => {
-    document.getElementById(id).addEventListener('input', function() {
-      state.project[keys[i]] = this.value;
+  // Project-level fields
+  const projectFields = ['projectName','company','projectDate','projectType'];
+  const projectKeys = ['name','company','date','projectType'];
+  projectFields.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', function() { state.project[projectKeys[i]] = this.value; saveState(); });
+    el.addEventListener('change', function() { state.project[projectKeys[i]] = this.value; saveState(); });
+  });
+
+  // Single building fields
+  const buildingFields = ['buildingName','buildingType','buildingSize','buildingAge','location'];
+  const buildingKeys = ['name','buildingType','buildingSize','buildingAge','location'];
+  buildingFields.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', function() { state.building[buildingKeys[i]] = this.value; saveState(); });
+    el.addEventListener('change', function() { state.building[buildingKeys[i]] = this.value; saveState(); });
+  });
+
+  // Mode toggle
+  document.querySelectorAll('#modeToggle button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      state.mode = this.dataset.mode;
+      if (state.mode === 'portfolio' && state.buildings.length === 0) {
+        state.buildings.push(newBuilding());
+      }
       saveState();
-    });
-    document.getElementById(id).addEventListener('change', function() {
-      state.project[keys[i]] = this.value;
-      saveState();
+      renderSetup();
     });
   });
 }
@@ -1370,11 +1620,25 @@ function labelFor(selectId, value) {
   return document.querySelector(`#${selectId} option[value="${value}"]`)?.textContent || value;
 }
 
+function buildingAgeLabel(val) {
+  const map = { 'new-construction': 'New Construction', '1-5': '1-5 years', '5-15': '5-15 years', '15-30': '15-30 years', '30+': '30+ years' };
+  return map[val] || val || 'Not specified';
+}
+
+function buildingTypeLabel(val) {
+  const map = { 'office': 'Office', 'hospital': 'Hospital / Healthcare', 'mixed-use': 'Mixed-Use', 'hotel': 'Hotel / Hospitality', 'retail': 'Retail', 'school': 'School / University', 'data-center': 'Data Center', 'stadium': 'Stadium / Arena', 'other': 'Other' };
+  return map[val] || val || 'Not specified';
+}
+
+function projectTypeLabel(val) {
+  const map = { 'new-construction': 'New Construction', 'major-renovation': 'Major Renovation', 'technology-overlay': 'Technology Overlay (existing building)' };
+  return map[val] || val || 'Not specified';
+}
+
 function buildBrief() {
   const p = state.project;
-  const buildingTypeLabel = labelFor('buildingType', p.buildingType);
-  const buildingAgeLabel = labelFor('buildingAge', p.buildingAge);
-  const projectTypeLabel = labelFor('projectType', p.projectType);
+  const isPortfolio = state.mode === 'portfolio';
+  const allBuildings = isPortfolio ? state.buildings : [{ ...state.building, projectType: p.projectType }];
 
   const outcomeLabels = state.outcomes.map(o => SKILLS.outcomes[o]?.title || o);
   const techLabels = state.technologies.map(t => SKILLS.technologies[t]?.title || t);
@@ -1383,7 +1647,7 @@ function buildBrief() {
 
 ## Instructions for AI Assistant
 
-You are helping generate a formal Request for Information (RFI) document for a commercial building technology procurement project. Use the project details, canvas notes, and domain knowledge below as your primary input.
+You are helping generate a formal Request for Information (RFI) document for a commercial building technology procurement project. ${isPortfolio ? 'This is a **property portfolio** project covering multiple buildings. The RFI should address the portfolio as a whole while acknowledging building-specific requirements where relevant.' : 'Use the project details, canvas notes, and domain knowledge below as your primary input.'}
 
 Key principles:
 - Frame all requirements as business outcomes, not technology specifications
@@ -1401,16 +1665,34 @@ Key principles:
 | Project Name | ${p.name || 'Not specified'} |
 | Company | ${p.company || 'Not specified'} |
 | Date | ${p.date || 'Not specified'} |
-| Building Type | ${buildingTypeLabel} |
-| Building Size | ${p.buildingSize ? p.buildingSize + ' sq ft' : 'Not specified'} |
-| Building Age | ${buildingAgeLabel} |
-| Location | ${p.location || 'Not specified'} |
-| Project Type | ${projectTypeLabel} |
-| Desired Outcomes | ${outcomeLabels.length ? outcomeLabels.join(', ') : 'Not specified'} |
+| Scope | ${isPortfolio ? 'Property Portfolio (' + allBuildings.length + ' buildings)' : 'Single Building'} |
+${!isPortfolio ? `| Project Type | ${projectTypeLabel(p.projectType)} |\n` : ''}| Desired Outcomes | ${outcomeLabels.length ? outcomeLabels.join(', ') : 'Not specified'} |
 | Technology Categories | ${techLabels.length ? techLabels.join(', ') : 'Not specified'} |
 
----
 `;
+
+  if (isPortfolio) {
+    brief += `### Portfolio Buildings\n\n`;
+    brief += `| # | Name | Type | Size | Age | Location | Project Type |\n`;
+    brief += `|---|------|------|------|-----|----------|--------------|\n`;
+    allBuildings.forEach((b, i) => {
+      brief += `| ${i + 1} | ${b.name || 'Unnamed'} | ${buildingTypeLabel(b.buildingType)} | ${b.buildingSize ? b.buildingSize + ' sq ft' : '—'} | ${buildingAgeLabel(b.buildingAge)} | ${b.location || '—'} | ${projectTypeLabel(b.projectType)} |\n`;
+    });
+    const totalSize = allBuildings.reduce((sum, b) => sum + (parseInt(b.buildingSize) || 0), 0);
+    if (totalSize > 0) brief += `\n**Total portfolio size:** ${totalSize.toLocaleString()} sq ft\n`;
+    brief += `\n`;
+  } else {
+    const b = state.building;
+    brief += `### Building Details\n\n`;
+    brief += `| Field | Value |\n|-------|-------|\n`;
+    if (b.name) brief += `| Building Name | ${b.name} |\n`;
+    brief += `| Building Type | ${buildingTypeLabel(b.buildingType)} |\n`;
+    brief += `| Building Size | ${b.buildingSize ? b.buildingSize + ' sq ft' : 'Not specified'} |\n`;
+    brief += `| Building Age | ${buildingAgeLabel(b.buildingAge)} |\n`;
+    brief += `| Location | ${b.location || 'Not specified'} |\n\n`;
+  }
+
+  brief += `---\n`;
 
   SECTIONS.forEach(sec => {
     const s = state.sections[sec.number];
@@ -1430,9 +1712,11 @@ The following research-backed domain knowledge is relevant to this project. Use 
 
 `;
 
-  // Building type knowledge
-  const bt = SKILLS.buildingTypes[p.buildingType];
-  if (bt) {
+  // Building type knowledge — collect unique types across all buildings
+  const buildingTypes = [...new Set(allBuildings.map(b => b.buildingType).filter(Boolean))];
+  buildingTypes.forEach(btKey => {
+    const bt = SKILLS.buildingTypes[btKey];
+    if (!bt) return;
     brief += `### Building Type: ${bt.title}
 
 ${bt.summary}
@@ -1447,7 +1731,7 @@ ${bt.rfiUseCases.map(u => '- ' + u).join('\n')}
 ${bt.kpis.map(k => '- ' + k).join('\n')}
 
 `;
-  }
+  });
 
   // Outcome knowledge
   if (state.outcomes.length) {
