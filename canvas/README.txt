@@ -1,5 +1,5 @@
 ***
-The Developers Smart Building Project Canvas
+The Smart Building RFI Canvas
 ***
 
 What this Project Canvas will do.

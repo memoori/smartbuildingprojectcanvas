@@ -1,56 +1,87 @@
-# Smart Building Project Canvas
+# Smart Building RFI Canvas
 
-An open-source toolkit for commercial real estate developers, owners, and operators to plan smart building technology adoption and generate structured Requests for Information (RFIs) for technology procurement.
+An interactive, open-source planning tool for commercial building owners, operators, and developers to plan smart building technology adoption and generate structured Requests for Information (RFIs) for technology procurement.
+
+## Quick Start
+
+**Open [`index.html`](index.html) in any browser.** No build step, no server, no dependencies.
+
+1. Fill in your project details (building type, size, age, location)
+2. Work through the 7 canvas sections — read the guidance, answer the questions, capture your notes
+3. Mark each section complete as you go
+4. Click **"Copy AI Brief to Clipboard"** to export a structured prompt
+5. Paste the brief into Claude, ChatGPT, or any AI assistant to generate a professional RFI document
+
+Your data is saved in your browser's local storage — it persists between sessions and never leaves your machine.
 
 ## What's in this repo
 
-### [`canvas/`](canvas/) — The Developers Smart Building Project Canvas
+### [`index.html`](index.html) — Interactive Canvas
 
-The original planning template — a structured 7-step framework for thinking through smart building technology projects:
+The main experience. A self-contained HTML page with an interactive version of the Smart Building RFI Canvas — 7 structured sections covering:
 
-1. Key Project Goals & Value Proposition
-2. Initial Actions
-3. Partnerships & Resources
-4. Costs & Risk
-5. Management & Delivery
-6. Future-Proofing
-7. Key Performance Indicators
+1. **Key Project Goals & Value Proposition** — Frame business outcomes, not technology
+2. **Initial Actions** — Establish baselines, prioritize use cases
+3. **Partnerships & Resources** — Vendors, MSIs, stakeholder alignment
+4. **Costs & Risk** — Budgets, CAPEX/OPEX, cybersecurity, commissioning
+5. **Management & Delivery** — Project governance, phased rollout
+6. **Future-Proofing** — Open standards, lifecycle planning, upgrade paths
+7. **Key Performance Indicators** — Quantitative and qualitative metrics
 
-Open `canvas/index.html` in a browser to view or print the canvas.
+Each section includes:
+- Questions from the original canvas
+- **Skills-informed guidance** — domain-specific tips drawn from industry research
+- **Tips** — practical insights from building industry experience
+- Example outputs
+- A notes area that auto-saves to local storage
 
 ### [`skills/`](skills/) — Smart Building Knowledge Base
 
-A curated, research-backed knowledge base covering building technology categories, building types, desired outcomes, industry standards, and procurement best practices. Skills are structured Markdown files that can be:
+A curated, research-backed knowledge base for AI assistants. When you paste your canvas brief into an AI, point it at this skills directory for deeper domain context:
 
-- Browsed on GitHub as standalone reference material
-- Used as context for AI-powered RFI generation
-- Contributed to via pull requests
+- **Technologies** — BMS/BAS, HVAC optimization, access control, occupancy sensing, energy management
+- **Building types** — Office, hospital, mixed-use
+- **Outcomes** — Reduce energy costs, improve tenant experience, achieve LEED
+- **Standards** — BACnet, MQTT, NIST 800-53
+- **Cross-cutting** — MSI role, market statistics
+- **RFI templates** — 6-section RFI structure modeled on the GSA Green Proving Ground format
 
-### [`app/`](app/) — RFI Generator Web App *(coming soon)*
+Skills are structured Markdown files with YAML frontmatter. They render on GitHub, are human-editable, and serve as rich context for AI-assisted RFI generation.
 
-A self-hostable Next.js web application that walks users through the canvas framework, takes their specific inputs (building type, goals, budget, timeline), and generates professional technology procurement RFIs using their own LLM API key (OpenAI, Anthropic, or Google).
+### [`canvas/`](canvas/) — Original Static Canvas
 
-### [`wireframes/`](wireframes/) — UX Wireframes *(coming soon)*
+The original poster-format planning template. Open `canvas/index.html` to view or print the classic layout.
 
-Interactive HTML/CSS wireframes for the web app, built for iteration before full implementation.
+## How AI-Assisted RFI Generation Works
+
+The canvas captures your structured thinking. The AI does the drafting.
+
+1. **You** work through the canvas, answering questions and capturing decisions for your specific building project
+2. **You** export a structured AI brief (Markdown format with project details and all your notes)
+3. **You** paste the brief into your preferred AI assistant (Claude, ChatGPT, etc.)
+4. **The AI** generates a professional RFI document with structured vendor questions
+
+For best results, also share the [`skills/`](skills/) directory with your AI assistant — it provides detailed domain knowledge on building technologies, cost benchmarks, standards, and RFI best practices.
+
+### Why RFIs, not RFPs?
+
+An **RFI** (Request for Information) asks vendors to describe their capabilities against your desired outcomes. An **RFP** prescribes specific solutions — too rigid for smart building tech where owners may not know what's available. The outcomes-based approach lets vendors innovate and compete on value, not just price.
 
 ## Philosophy
 
-This tool is built around three principles drawn from decades of smart building industry experience:
+Built on three principles from decades of smart building industry experience:
 
-1. **Outcomes first, not technology.** Start with "What problem are you solving?" — not "What technology do you want?" Building owners think in NOI and tenant experience, not protocol specifications.
-
-2. **Baby steps.** Don't overwhelm. Guide users through focused use cases — "What's the ONE problem you're solving first?" — rather than a laundry list of technology.
-
-3. **RFIs, not RFPs.** An RFI asks vendors to describe their capabilities against your desired outcomes. An RFP prescribes specific solutions. For most building owners exploring smart building technology, an RFI is the right starting point — it lets vendors innovate and compete on value.
+1. **Outcomes first, not technology.** Start with "What problem are you solving?" Building owners think in NOI and tenant experience, not protocol specifications.
+2. **Baby steps.** Guide through focused use cases — "What's the ONE problem you're solving first?" — not a laundry list of technology.
+3. **Meet owners where they are.** The gap is readiness, not algorithms. The tool should help owners establish their baseline reality before requesting vendor information.
 
 ## Licensing
 
-- **Code** (`canvas/`, `app/`, `wireframes/`): [BSD 3-Clause License](LICENSE)
+- **Code** (`index.html`, `canvas/`): [BSD 3-Clause License](LICENSE)
 - **Content** (`skills/`): [Creative Commons Attribution-ShareAlike 4.0](LICENSE-CC-BY-SA-4.0)
 
 ## Credits
 
 Designed by [Memoori Research](https://www.memoori.com).
 
-The Smart Building Project Canvas was originally created to help commercial real estate developers navigate technology adoption decisions. This extended toolkit adds AI-powered RFI generation capabilities while preserving the canvas as a standalone planning framework.
+The Smart Building RFI Canvas was originally created to help commercial real estate developers navigate technology adoption decisions. This interactive version adds AI-assisted RFI generation capabilities while preserving the canvas as a standalone planning framework.

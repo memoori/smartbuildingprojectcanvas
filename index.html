@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Smart Building RFI Canvas — Interactive RFI Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #1b3660;
+      --sky: #63c7f2;
+      --pink: #e83d7d;
+      --blue: #055da9;
+      --gold: #fab313;
+      --green: #82b129;
+      --charcoal: #464545;
+      --bg: #f7f8fa;
+      --card-bg: #ffffff;
+      --text: #2d3748;
+      --text-light: #718096;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-lg: 0 4px 14px rgba(0,0,0,.1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Hero ─────────────────────────────────────── */
+    .hero {
+      background: #fff;
+      border-bottom: 3px solid var(--sky);
+      color: var(--navy);
+      padding: 2.5rem 1.5rem 2rem;
+      text-align: center;
+    }
+    .hero-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .hero-logo {
+      height: 32px;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+      letter-spacing: -.01em;
+      color: var(--navy);
+    }
+    .hero p {
+      font-size: .95rem;
+      font-weight: 300;
+      color: var(--text-light);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    @media (min-width: 768px) {
+      .hero { padding: 3.5rem 2rem 2.5rem; }
+      .hero h1 { font-size: 2.25rem; }
+    }
+
+    /* ── Container ────────────────────────────────── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* ── Progress Bar (sticky) ────────────────────── */
+    .progress-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: .75rem 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .progress-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .progress-label {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text-light);
+      white-space: nowrap;
+    }
+    .progress-bar {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+    .progress-seg {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform .15s, opacity .15s;
+      opacity: .3;
+    }
+    .progress-seg.done { opacity: 1; }
+    .progress-seg:hover { transform: scaleY(1.6); }
+    .progress-count {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+
+    /* ── Cards (shared) ───────────────────────────── */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Project Setup ────────────────────────────── */
+    .setup { margin-top: 1.5rem; }
+    .setup-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+    .setup-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .setup-header .chevron {
+      transition: transform .2s;
+      color: var(--text-light);
+    }
+    .setup-header .chevron.open { transform: rotate(180deg); }
+    .setup-body { padding: 0 1.25rem 1.25rem; }
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: .75rem;
+    }
+    @media (min-width: 600px) {
+      .setup-grid { grid-template-columns: 1fr 1fr; }
+      .setup-grid .full { grid-column: 1 / -1; }
+    }
+    .field label {
+      display: block;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: .25rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: .55rem .75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .875rem;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(27,54,96,.1);
+    }
+    .field select { cursor: pointer; }
+
+    /* Checkbox group */
+    .checkbox-group-label {
+      display: block;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: .5rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .checkbox-pill {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .4rem .75rem;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      font-size: .8rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      user-select: none;
+    }
+    .checkbox-pill:hover { border-color: var(--navy); }
+    .checkbox-pill input { display: none; }
+    .checkbox-pill.checked {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+    }
+
+    /* ── Section Cards ────────────────────────────── */
+    .sections { margin-top: .5rem; padding-bottom: 2rem; }
+
+    .section-card {
+      border-left: 4px solid var(--section-color, var(--navy));
+      transition: box-shadow .2s;
+    }
+    .section-card:hover { box-shadow: var(--shadow-lg); }
+
+    .section-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .section-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .85rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .section-title {
+      flex: 1;
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .section-badge {
+      font-size: .7rem;
+      font-weight: 600;
+      padding: .2rem .6rem;
+      border-radius: 99px;
+      background: #e6fffa;
+      color: #276749;
+    }
+    .section-chevron {
+      color: var(--text-light);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    .section-chevron.open { transform: rotate(180deg); }
+
+    .section-body { padding: 0 1.25rem 1.25rem; }
+
+    /* Tip */
+    .tip {
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      font-size: .85rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      display: flex;
+      gap: .5rem;
+    }
+    .tip-icon { flex-shrink: 0; font-size: 1rem; }
+
+    /* Questions */
+    .questions-heading, .guidance-heading, .examples-heading {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: .5rem;
+      color: var(--text-light);
+    }
+    .questions-list {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+    .questions-list li {
+      position: relative;
+      padding-left: 1rem;
+      margin-bottom: .4rem;
+      font-size: .85rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .questions-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: .55em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--section-color, var(--navy));
+    }
+
+    /* Guidance (collapsible) */
+    .guidance-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--section-color, var(--navy));
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-bottom: .5rem;
+      font-family: inherit;
+    }
+    .guidance-toggle:hover { opacity: .8; }
+    .guidance-toggle .arrow {
+      display: inline-block;
+      transition: transform .2s;
+      font-size: .65rem;
+    }
+    .guidance-toggle .arrow.open { transform: rotate(90deg); }
+    .guidance-panel {
+      display: none;
+      margin-bottom: 1rem;
+    }
+    .guidance-panel.open { display: block; }
+    .guidance-list {
+      list-style: none;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+    }
+    .guidance-list li {
+      font-size: .82rem;
+      line-height: 1.55;
+      color: var(--text);
+      padding: .35rem 0;
+      padding-left: .75rem;
+      position: relative;
+    }
+    .guidance-list li::before {
+      content: '\2192';
+      position: absolute;
+      left: 0;
+      color: var(--section-color, var(--navy));
+      font-weight: 600;
+    }
+
+    /* Examples (collapsible) */
+    .examples-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--text-light);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-bottom: .5rem;
+      font-family: inherit;
+    }
+    .examples-toggle:hover { color: var(--text); }
+    .examples-toggle .arrow {
+      display: inline-block;
+      transition: transform .2s;
+      font-size: .65rem;
+    }
+    .examples-toggle .arrow.open { transform: rotate(90deg); }
+    .examples-panel { display: none; margin-bottom: 1rem; }
+    .examples-panel.open { display: block; }
+    .examples-list {
+      list-style: none;
+      padding-left: 1rem;
+    }
+    .examples-list li {
+      font-size: .82rem;
+      color: var(--text-light);
+      font-style: italic;
+      padding: .25rem 0;
+      position: relative;
+    }
+    .examples-list li::before {
+      content: '\2022';
+      position: absolute;
+      left: -.75rem;
+    }
+
+    /* Textarea */
+    .notes-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: .35rem;
+    }
+    .notes-label span:first-child {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--text-light);
+    }
+    .notes-label .char-count {
+      font-size: .7rem;
+      color: var(--text-light);
+    }
+    .notes-area {
+      width: 100%;
+      min-height: 120px;
+      padding: .75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .85rem;
+      color: var(--text);
+      background: var(--bg);
+      resize: vertical;
+      line-height: 1.6;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .notes-area:focus {
+      outline: none;
+      border-color: var(--section-color, var(--navy));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--section-color, var(--navy)) 15%, transparent);
+    }
+    .notes-area::placeholder { color: #a0aec0; }
+
+    /* Complete button */
+    .section-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: .75rem;
+    }
+    .btn-complete {
+      padding: .45rem 1rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid var(--section-color, var(--navy));
+      background: transparent;
+      color: var(--section-color, var(--navy));
+      transition: background .15s, color .15s;
+    }
+    .btn-complete:hover {
+      background: var(--section-color, var(--navy));
+      color: #fff;
+    }
+    .btn-complete.done {
+      background: var(--section-color, var(--navy));
+      color: #fff;
+    }
+
+    /* ── Export Panel ──────────────────────────────── */
+    .export-panel {
+      margin-top: .5rem;
+      margin-bottom: 2rem;
+      border: 2px solid var(--green);
+    }
+    .export-header {
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .export-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: .35rem;
+    }
+    .export-header p {
+      font-size: .85rem;
+      color: var(--text-light);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .export-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      justify-content: center;
+      padding: 0 1.25rem 1.25rem;
+    }
+    .btn-export {
+      padding: .65rem 1.5rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform .1s, box-shadow .15s;
+    }
+    .btn-export:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+    .btn-export:active { transform: translateY(0); }
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--navy);
+      border: 2px solid var(--navy);
+    }
+    .btn-danger {
+      background: var(--card-bg);
+      color: var(--pink);
+      border: 2px solid var(--pink);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--navy);
+      color: #fff;
+      padding: .75rem 1.5rem;
+      border-radius: 8px;
+      font-size: .85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      opacity: 0;
+      transition: transform .3s ease, opacity .3s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Preview modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      max-width: 800px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,.2);
+    }
+    .modal-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 1rem; font-weight: 600; color: var(--navy); }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: var(--text-light);
+      padding: .25rem;
+    }
+    .modal-body {
+      padding: 1.25rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-body pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+      font-size: .78rem;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .modal-footer {
+      padding: .75rem 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: .5rem;
+      justify-content: flex-end;
+    }
+
+    /* ── Footer ───────────────────────────────────── */
+    .site-footer {
+      background: #fff;
+      border-top: 3px solid var(--sky);
+      color: var(--text-light);
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    .site-footer a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .site-footer a:hover { text-decoration: underline; }
+    .footer-logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .footer-logos img { height: 28px; }
+    .site-footer p {
+      font-size: .75rem;
+      margin-bottom: .35rem;
+    }
+
+    /* ── Utilities ─────────────────────────────────── */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+    @media print {
+      .progress-wrap, .btn-complete, .section-actions, .export-panel, .guidance-toggle, .examples-toggle { display: none; }
+      .section-body, .setup-body, .guidance-panel, .examples-panel { display: block !important; }
+      .section-card { break-inside: avoid; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ─── Hero ──────────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-inner">
+    <img src="https://memoori.com/wp-content/uploads/2021/03/logo@2x-e1614922668837.png"
+         alt="Memoori" class="hero-logo">
+    <h1>The Smart Building RFI Canvas</h1>
+    <p>An interactive planning tool for commercial building owners and operators.
+       Walk through 7 structured sections, capture your project decisions,
+       and export a structured brief — complete with curated domain knowledge —
+       for your AI assistant to generate a professional Request for Information (RFI).</p>
+    <p style="margin-top:.75rem;font-size:.85rem">
+       Powered by a curated <a href="https://github.com/memoori/SmartBuildingProjectCanvas/tree/main/skills" target="_blank" rel="noopener" style="color:var(--sky);font-weight:600">skills knowledge base</a>
+       covering building technologies, cost benchmarks, standards, and RFI best practices.
+       Your export includes the relevant skills content so your AI has everything it needs.
+    </p>
+  </div>
+</header>
+
+<!-- ─── Progress Bar ──────────────────────────────────── -->
+<nav class="progress-wrap" aria-label="Canvas progress">
+  <div class="progress-inner">
+    <span class="progress-label">Progress</span>
+    <div class="progress-bar" id="progressBar"></div>
+    <span class="progress-count" id="progressCount">0 / 7</span>
+  </div>
+</nav>
+
+<!-- ─── Main Content ──────────────────────────────────── -->
+<main class="container">
+
+  <!-- Project Setup -->
+  <div class="card setup" id="setupCard">
+    <div class="setup-header" onclick="toggleSetup()">
+      <h2>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Project Details
+      </h2>
+      <svg class="chevron open" id="setupChevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="setup-body" id="setupBody">
+      <div class="setup-grid">
+        <div class="field">
+          <label for="projectName">Project Name</label>
+          <input type="text" id="projectName" placeholder="e.g. HQ Smart Building Upgrade">
+        </div>
+        <div class="field">
+          <label for="company">Company / Organisation</label>
+          <input type="text" id="company" placeholder="e.g. Acme Properties">
+        </div>
+        <div class="field">
+          <label for="projectDate">Date</label>
+          <input type="date" id="projectDate">
+        </div>
+        <div class="field">
+          <label for="buildingType">Building Type</label>
+          <select id="buildingType">
+            <option value="">Select...</option>
+            <option value="office">Office</option>
+            <option value="hospital">Hospital / Healthcare</option>
+            <option value="mixed-use">Mixed-Use</option>
+            <option value="hotel">Hotel / Hospitality</option>
+            <option value="retail">Retail</option>
+            <option value="school">School / University</option>
+            <option value="data-center">Data Center</option>
+            <option value="stadium">Stadium / Arena</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="buildingSize">Building Size (sq ft)</label>
+          <input type="number" id="buildingSize" placeholder="e.g. 150000">
+        </div>
+        <div class="field">
+          <label for="buildingAge">Building Age</label>
+          <select id="buildingAge">
+            <option value="">Select...</option>
+            <option value="new-construction">New Construction</option>
+            <option value="1-5">1-5 years</option>
+            <option value="5-15">5-15 years</option>
+            <option value="15-30">15-30 years</option>
+            <option value="30+">30+ years</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="location">Location</label>
+          <input type="text" id="location" placeholder="e.g. London, UK">
+        </div>
+        <div class="field">
+          <label for="projectType">Project Type</label>
+          <select id="projectType">
+            <option value="">Select...</option>
+            <option value="new-construction">New Construction</option>
+            <option value="major-renovation">Major Renovation</option>
+            <option value="technology-overlay">Technology Overlay (existing building)</option>
+          </select>
+        </div>
+        <div class="full" style="margin-top:.25rem">
+          <span class="checkbox-group-label">Desired Outcomes (select all that apply)</span>
+          <div class="checkbox-group" id="outcomesGroup">
+            <label class="checkbox-pill" data-value="reduce-energy-costs"><input type="checkbox"> Reduce Energy Costs</label>
+            <label class="checkbox-pill" data-value="improve-tenant-experience"><input type="checkbox"> Improve Tenant Experience</label>
+            <label class="checkbox-pill" data-value="achieve-leed"><input type="checkbox"> Achieve LEED / Certification</label>
+          </div>
+        </div>
+        <div class="full" style="margin-top:.25rem">
+          <span class="checkbox-group-label">Technology Categories of Interest (select all that apply)</span>
+          <div class="checkbox-group" id="techGroup">
+            <label class="checkbox-pill" data-value="bms-bas"><input type="checkbox"> BMS / BAS</label>
+            <label class="checkbox-pill" data-value="hvac-optimization"><input type="checkbox"> HVAC Optimization</label>
+            <label class="checkbox-pill" data-value="access-control"><input type="checkbox"> Access Control</label>
+            <label class="checkbox-pill" data-value="occupancy-sensing"><input type="checkbox"> Occupancy Sensing</label>
+            <label class="checkbox-pill" data-value="energy-management-emis"><input type="checkbox"> Energy Management / EMIS</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instruction -->
+  <div style="padding:.5rem .25rem;font-size:.82rem;color:var(--text-light)">
+    Work through each section below. Expand a section to see the questions, read the guidance,
+    and capture your notes. When all 7 are marked complete, export your brief for AI-assisted RFI generation.
+  </div>
+
+  <!-- Canvas Sections -->
+  <div class="sections" id="sections"></div>
+
+  <!-- Export Panel -->
+  <div class="card export-panel" id="exportPanel">
+    <div class="export-header">
+      <h2>Export Your AI Brief</h2>
+      <p>Copy your structured project brief to the clipboard, then paste it into
+         Claude, ChatGPT, or any AI assistant to generate a professional RFI document.</p>
+    </div>
+    <div class="export-actions">
+      <button class="btn-export btn-primary" onclick="exportBrief()">Copy AI Brief to Clipboard</button>
+      <button class="btn-export btn-secondary" onclick="previewBrief()">Preview Brief</button>
+      <button class="btn-export btn-secondary" onclick="downloadBrief()">Download as .txt</button>
+      <button class="btn-export btn-danger" onclick="clearAll()">Clear All Data</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- Preview Modal -->
+<div class="modal-overlay" id="previewModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>AI Brief Preview</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <pre id="previewContent"></pre>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-export btn-secondary" onclick="closeModal()">Close</button>
+      <button class="btn-export btn-primary" onclick="exportBrief();closeModal()">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ─── Footer ────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-logos">
+    <img src="https://memoori.com/wp-content/uploads/2021/03/logo@2x-e1614922668837.png" alt="Memoori">
+  </div>
+  <p>Designed by <a href="https://www.memoori.com" target="_blank" rel="noopener">Memoori Research</a> &middot; Version 2.0</p>
+  <p>Code: <a href="https://github.com/memoori/SmartBuildingProjectCanvas" target="_blank" rel="noopener">GitHub</a>
+     &middot; Skills knowledge base: <a href="https://github.com/memoori/SmartBuildingProjectCanvas/tree/main/skills" target="_blank" rel="noopener">skills/</a></p>
+  <p style="margin-top:.5rem;font-size:.7rem;opacity:.6">Licensed under Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</p>
+</footer>
+
+<script>
+// ─── Skills Knowledge Base (embedded) ────────────────────
+const SKILLS = {
+  buildingTypes: {
+    "office": {
+      title: "Office Buildings",
+      summary: "Office buildings represent the largest segment of smart building technology adoption (33.7% of all IoT sensors, 650M+ devices in 2024). ACEEE research shows 18% energy savings achievable. Hybrid work (40-60% average daily occupancy) makes occupancy-responsive operations compelling.",
+      priorities: ["Occupancy sensing & space utilization", "HVAC optimization (after-hours energy is often 50%+ of total)", "Tenant experience technology (91% willing to pay premium)", "Energy management & sub-metering", "Access control modernization (mobile credentials, touchless)"],
+      rfiUseCases: ["Reduce energy costs by 15% without compromising tenant comfort", "Understand how space is actually being used post-pandemic", "Offer a mobile-first tenant experience comparable to Class A competitors", "Right-size HVAC operations for actual occupancy patterns"],
+      kpis: ["Energy Use Intensity (EUI) — kBtu/sqft/year", "ENERGY STAR score (1-100)", "Tenant satisfaction score", "Space utilization rate", "After-hours energy ratio"]
+    },
+    "hospital": {
+      title: "Healthcare Facilities",
+      summary: "Healthcare facilities are among the most complex environments for smart building technology. ACEEE shows 14% energy savings achievable, but constraints are demanding: patient safety, regulatory compliance (HIPAA, Joint Commission), 24/7 operations, and strict IEQ requirements. Every decision must answer: 'What happens if this system fails while a patient is in surgery?'",
+      priorities: ["HVAC with clinical-grade controls (OR, isolation rooms, pharmacy)", "Access control with layered security (public/restricted/critical zones)", "Energy management with 24/7 base loads", "Asset tracking (RTLS) for mobile medical equipment", "Indoor air quality monitoring (continuous, compliance-grade)"],
+      rfiUseCases: ["Reduce energy costs in our campus without affecting clinical operations", "Real-time monitoring of pressure relationships in OR suites and isolation rooms", "Track mobile medical equipment to reduce loss and improve availability", "Upgrade access control while maintaining layered security model"],
+      kpis: ["Energy Use Intensity (EUI) benchmarked against ENERGY STAR for hospitals", "Clinical environmental compliance rate (% rooms within spec)", "Equipment utilization rate", "Patient satisfaction (HCAHPS scores)", "Security incident response time"]
+    },
+    "mixed-use": {
+      title: "Mixed-Use Developments",
+      summary: "Mixed-use developments combine office, residential, retail, and/or hotel functions with different operational schedules, user expectations, and regulatory frameworks. The smart building challenge is integration without interference: retail evening hours shouldn't heat office floors; residential HVAC shouldn't be billed to commercial tenants.",
+      priorities: ["Unified identity & access management across all functions", "Central plant optimization with fair cost allocation", "Integrated building management with function-specific control", "Parking management (resident/office/retail/hotel allocations)", "Network infrastructure with separate domains per function"],
+      rfiUseCases: ["Fair energy cost allocation across residential, commercial, and retail tenants", "Single identity system with appropriate access by function", "Central plant optimization serving different load profiles", "Shared parking with function-specific rules"],
+      kpis: ["Energy cost per function (office $/sqft, residential $/unit, retail $/sqft)", "Cross-function satisfaction scores", "Allocation accuracy and dispute rate", "Common area energy efficiency"]
+    }
+  },
+  outcomes: {
+    "reduce-energy-costs": {
+      title: "Reduce Energy Costs",
+      summary: "Energy costs typically represent 20-30% of operating expenses — the single largest controllable cost after personnel. Smart building technology achieves savings through eliminating waste, optimizing operations, and grid interaction.",
+      benchmarks: "Office: 18% achievable savings | Hospital: 14% | Retail: 14% | Hotel: 8% | Data Center: up to 40%. Typical ROI: 3:1 over 5 years (JLL estimate). IoT project success rate: only 16% fully realized — the most common failure is dashboards nobody acts on.",
+      techPriorities: ["Energy management / EMIS (you can't reduce what you don't measure)", "HVAC optimization (biggest consumer = biggest opportunity)", "Occupancy sensing (demand-controlled operations)", "Lighting controls (20-50% lighting energy savings)", "BMS modernization (prerequisite for all optimization)"]
+    },
+    "improve-tenant-experience": {
+      title: "Improve Tenant Experience",
+      summary: "Tenant experience is the primary competitive differentiator in CRE. 91% of tenants are willing to pay a premium for tech-enhanced workspaces. LEED-certified buildings command 8.5-25% rental premiums. Replacing a tenant costs 12-18 months of rent.",
+      benchmarks: "Tenants prioritize: thermal comfort (#1 complaint), air quality (post-COVID awareness), frictionless access (mobile credentials), reliable connectivity, responsive maintenance, and flexible space (room/desk booking).",
+      techPriorities: ["Tenant experience / workplace apps", "Access control modernization (lobby sets the tone)", "Indoor environmental quality monitoring", "Occupancy sensing + space analytics", "HVAC optimization (responsive comfort, not fixed schedules)"]
+    },
+    "achieve-leed": {
+      title: "Achieve LEED / Certification",
+      summary: "LEED certification increases rental premiums by 8.5-25%. Smart building technology contributes to credits across Energy & Atmosphere (up to 33 points), Indoor Environmental Quality (up to 16 points), and Innovation (up to 6 points). Budget 1-3% of construction cost for LEED-related incremental costs.",
+      benchmarks: "Certified: 40-49 pts | Silver: 50-59 | Gold: 60-79 | Platinum: 80+. Related certifications: WELL (health/wellness), SmartScore (technology capability), BREEAM (UK/Europe), ENERGY STAR (energy benchmarking), NABERS (Australia).",
+      techPriorities: ["BMS/BAS with ASHRAE 90.1 compliance (energy optimization credits)", "Sub-metering / EMIS (Advanced Energy Metering credit)", "IAQ monitoring (CO2 sensors in densely occupied spaces)", "Lighting controls (occupancy sensors, daylight-responsive dimming)", "Commissioning support (monitoring-based commissioning for Enhanced Commissioning credits)"]
+    }
+  },
+  technologies: {
+    "bms-bas": {
+      title: "Building Management System / Building Automation System",
+      summary: "The central nervous system of a building's operations — monitors and controls HVAC, lighting, fire safety, access control, and elevators. BAS penetration: under 20% of US commercial buildings, but majority of large buildings (50,000+ sqft).",
+      costs: "New installation: $2.50-$7.00/sqft | Upgrade/migration: $1.00-$4.00/sqft | Cloud analytics overlay: $0.01-$0.20/sqft/year | Payback: 3-7 years | Energy savings: 10-25% HVAC reduction",
+      rfiQuestions: ["Describe your platform architecture (edge, cloud, hybrid). What runs locally vs. cloud?", "Which protocols are natively supported (BACnet, Modbus, LonWorks, KNX, MQTT)?", "Does your platform expose open APIs (REST, GraphQL)? Provide documentation.", "How do you handle semantic data modeling (Project Haystack, Brick Schema, ASHRAE 223P)?", "Describe fault detection and diagnostics (FDD) capabilities — rule-based, ML-powered, or both?", "What is your approach to legacy system integration without rip-and-replace?", "What cybersecurity certifications does your platform hold (SOC 2, ISO 27001, IEC 62443)?", "Describe your product roadmap for the next 24 months."],
+      redFlags: ["Proprietary protocols only (vendor lock-in risk)", "No API access ('We handle all integrations' is a lock-in strategy)", "Vague cybersecurity answers (immature security posture)", "No reference projects in your building type", "Bundled hardware + software with no separation", "No data export capability"],
+      evaluationCriteria: "Interoperability (High) | Cybersecurity (High) | Total cost of ownership (High) | Data ownership (High) | Scalability (Medium) | Analytics & AI (Medium)"
+    },
+    "hvac-optimization": {
+      title: "HVAC Controls & Optimization",
+      summary: "HVAC accounts for 40-60% of total building energy. Optimization uses advanced controls, sensors, and AI/ML to reduce consumption while maintaining comfort. Achievable savings: 15-30% in HVAC energy.",
+      costs: "AI-driven optimization: $0.10-$0.50/sqft/year | DCV retrofit: $1.00-$3.00/sqft | Central plant optimization: $50K-$200K | FDD: $0.03/sqft/year median | Payback: 2-5 years",
+      rfiQuestions: ["What occupancy-responsive control strategies does your platform support?", "Describe your demand-controlled ventilation capabilities.", "How does your system handle predictive pre-conditioning using weather forecasts?", "What energy savings can you guarantee or have you demonstrated in comparable buildings?", "Can your platform participate in demand response programs?", "Describe your fault detection and diagnostics approach."],
+      redFlags: ["Cannot integrate with existing BMS (requires full replacement)", "No measured-and-verified savings data from comparable buildings", "Optimization requires constant cloud connectivity with no local fallback"],
+      evaluationCriteria: "Demonstrated energy savings (High) | Integration with existing BMS (High) | Occupancy-responsive capability (High) | Predictive control (Medium) | Grid-interactive capability (Medium)"
+    },
+    "access-control": {
+      title: "Access Control & Physical Security",
+      summary: "Manages who can enter, when, and where. In smart buildings, access control triggers HVAC, lighting, elevator dispatch, and occupancy analytics. Largest IoT segment by device count: 421M devices globally in 2024.",
+      costs: "Cloud-managed per door: $1,500-$3,500 installed | Mobile credential platform: $2-$5/user/month | Visitor management: $100-$300/month/lobby | Integration with BMS/elevator: $10K-$50K",
+      rfiQuestions: ["What credential types are supported (mobile BLE/NFC, card, biometric)?", "Describe your cloud vs. on-premise architecture and failover capability.", "How do you handle multi-tenant access partitioning with property management oversight?", "What integrations do you support with BMS, elevator dispatch, and video surveillance?", "Describe your visitor management and temporary credential capabilities.", "What happens to access control if the cloud connection is lost?"],
+      redFlags: ["Still uses Wiegand protocol (insecure, unidirectional — should be OSDP v2)", "No mobile credential roadmap", "Cannot partition access domains in multi-tenant buildings", "No offline/local failover capability"],
+      evaluationCriteria: "Mobile credential support (High) | Multi-tenant partitioning (High) | BMS integration (Medium) | Offline capability (High) | Visitor management (Medium)"
+    },
+    "occupancy-sensing": {
+      title: "Occupancy Sensing & Space Utilization",
+      summary: "Measures whether spaces are occupied, how many people, and usage patterns over time. Drives energy savings (only condition occupied spaces) and space optimization (understand utilization for portfolio decisions). Essential for hybrid work offices.",
+      costs: "PIR/ultrasonic per zone: $50-$150 | LiDAR per entry: $500-$1,500 | Desk sensors: $100-$300/desk | Wi-Fi analytics: $0.05-$0.20/sqft/year | Space analytics platform: $0.10-$0.50/sqft/year | ROI: 6-18 months",
+      rfiQuestions: ["What sensing technologies do you use (PIR, LiDAR, camera, Wi-Fi, radar)?", "What is the accuracy and resolution (presence vs. count vs. position)?", "How do you handle privacy (do you capture images or PII)?", "How does sensor data integrate with BMS for demand-controlled ventilation and lighting?", "What analytics and reporting capabilities are included?", "Can you support both real-time (room available now?) and historical (how was this floor used last quarter?) use cases?"],
+      redFlags: ["Camera-based only with no privacy-preserving option", "Cannot integrate with BMS for operational response", "Analytics limited to dashboards with no API for downstream systems", "Requires proprietary network infrastructure"],
+      evaluationCriteria: "Privacy approach (High) | BMS integration (High) | Analytics depth (Medium) | Accuracy (Medium) | Deployment simplicity (Medium)"
+    },
+    "energy-management-emis": {
+      title: "Energy Management & Information Systems (EMIS)",
+      summary: "Software, hardware, and services to monitor, analyze, and optimize energy consumption. Ranges from utility tracking to real-time sub-metering, automated diagnostics, and grid-interactive strategies. EU EPBD mandates interoperable BACS for non-residential buildings from 2025.",
+      costs: "EMIS platform: $0.01-$0.20/sqft/year | Sub-meter hardware: $500-$2,000/point | Comprehensive deployment: $0.50-$3.00/sqft total | Savings: 10-30% energy reduction | Demand response revenue: $50-$200/kW/year",
+      rfiQuestions: ["What levels of metering granularity do you support (building, system, floor, tenant)?", "How do you integrate with existing utility meters and BMS data?", "What automated fault detection and diagnostics capabilities are included?", "Do you support ENERGY STAR Portfolio Manager integration?", "Can your platform participate in demand response or grid-interactive programs?", "What carbon accounting and emissions tracking capabilities do you offer?"],
+      redFlags: ["No sub-metering capability (utility bills only)", "Cannot integrate with BMS data points", "No automated diagnostics (manual analysis only)", "Proprietary data format with no export"],
+      evaluationCriteria: "Metering granularity (High) | BMS integration (High) | Automated diagnostics (High) | Benchmarking capability (Medium) | Grid-interactive features (Medium)"
+    }
+  },
+  rfiStructure: [
+    {title: "Introduction & Project Context", guidance: "Who we are, building description, project scope, desired outcomes. Frame all outcomes in business language (NOI, tenant experience, compliance). Include the 'three rings' baseline."},
+    {title: "Technology Requirements & Use Cases", guidance: "What business outcomes the technology must achieve, required building system interfaces. Define outcomes, not technology specs — let vendors propose solutions."},
+    {title: "Vendor Information Requested", guidance: "Questions for vendors: technology overview, functionality, innovation, ease of integration. Include architecture, protocols, APIs, cybersecurity, and reference projects."},
+    {title: "Performance & Cost Information Requested", guidance: "Energy savings, non-energy benefits, upfront/ongoing costs, payback period, warranties, third-party validation. Request total cost of ownership breakdown."},
+    {title: "Commercialization & Compliance", guidance: "Market readiness level, certifications (UL, SOC 2, FedRAMP), cybersecurity standards, regulatory compliance, financing options, product roadmap."},
+    {title: "Submission Requirements & Evaluation Criteria", guidance: "How to respond, what to include, how responses will be scored, timeline. Use character-limited fields and tiered rating scales."}
+  ]
+};
+
+// ─── Canvas Data ─────────────────────────────────────────
+const SECTIONS = [
+  {
+    number: 1,
+    title: "Key Project Goals & Value Proposition",
+    color: "#63c7f2",
+    tip: "Frame goals in business outcomes, not technology. Think: “What does a fully leased, profitable building look like?” — not “What sensors do we need?”",
+    questions: [
+      "What are the problems this smart building project will help to solve?",
+      "What tenants are we trying to attract, and how will this project help?",
+      "What value will it deliver to our business?",
+      "What goal(s) must the project achieve?"
+    ],
+    examples: [
+      "Improve our tenant’s experience",
+      "Reduce energy costs",
+      "Optimize space utilization",
+      "Ensure regulatory compliance",
+      "Achieve a certification (e.g. LEED / SmartScore / BREEAM / WELL / RESET / SPIRE)"
+    ],
+    guidance: [
+      "Energy costs are typically 20–30% of operating expenses — the single largest controllable cost after personnel",
+      "91% of tenants are willing to pay a premium for tech-enhanced workspaces (JLL research)",
+      "ACEEE research shows 18% energy savings achievable through smart building strategies in offices",
+      "Quantify the opportunity: “Our building spends $X/sqft on energy; comparable smart buildings achieve $Y — that’s $Z annual savings”",
+      "Only 16% of IoT projects are fully realized (Beecham Research) — start focused, not broad"
+    ]
+  },
+  {
+    number: 2,
+    title: "Initial Actions",
+    color: "#e83d7d",
+    tip: "Start with the “three rings” baseline: What do you believe about your building? What do the records say? What is the operational truth? Don’t skip this step.",
+    questions: [
+      "What actions will our value propositions require?",
+      "Which actions are most important and in what order should they be performed?",
+      "Do our core actions have any prerequisites (e.g. for retrofit projects, is a building systems audit required)?",
+      "Which existing building/business systems may need to be integrated?"
+    ],
+    examples: [
+      "In order to optimize our space we need to measure occupancy utilization.",
+      "Air quality is now a key tenant concern so we need to monitor CO₂ levels.",
+      "Our current access control vendor does not allow the necessary integrations, so we need to source a new vendor."
+    ],
+    guidance: [
+      "Start with ONE focused use case before expanding scope — “What’s the one problem you’re solving first?”",
+      "For retrofit projects, a building systems audit is almost always the critical first step",
+      "Under 20% of US commercial buildings have a BAS, but most large buildings (50,000+ sqft) do — understand what you already have",
+      "Check if existing systems support open protocols (BACnet, Modbus, MQTT) before planning integrations",
+      "After-hours energy use is often 50%+ of total in offices — measure this baseline first"
+    ]
+  },
+  {
+    number: 3,
+    title: "Partnerships & Resources",
+    color: "#055da9",
+    tip: "Consider whether you need a Master Systems Integrator (MSI) — especially if you have 5+ technology subsystems that need to interoperate.",
+    questions: [
+      "Which core actions will partners need to perform (internal or external)?",
+      "How do we select the right partners?",
+      "What internal partners do we need to involve in the project?",
+      "How will we make sure we are not “locked-in” to one vendor ecosystem?",
+      "Do partners require access to resources, skills or datasets to support delivery?",
+      "Do we have the skill and ability to define our building’s use cases for all personas (tenants, visitors, etc.)?"
+    ],
+    examples: [
+      "In order to select the right technology vendor, we need a detailed RFI document.",
+      "Engage a specialist to help us define our building’s use cases and communicate them to all stakeholders."
+    ],
+    guidance: [
+      "The BMS market is dominated by a few global vendors (Schneider, Siemens, Honeywell, JCI) who also manufacture equipment — understand the lock-in implications",
+      "An MSI ensures subsystems from different vendors work together, acting as your technology advocate",
+      "Internal stakeholder mapping is critical: IT, facilities, security, operations, and C-suite all need alignment",
+      "Demand open standards (BACnet, MQTT, open APIs) contractually to avoid vendor lock-in",
+      "Consider whether partners need access to your building data, network, or physical spaces"
+    ]
+  },
+  {
+    number: 4,
+    title: "Costs & Risk",
+    color: "#fab313",
+    tip: "The biggest risk is underinvestment in commissioning. Technology installed but not properly commissioned delivers 0% savings. Budget for commissioning and 12 months of performance monitoring.",
+    questions: [
+      "What are the most important costs inherent in delivering our project?",
+      "Cost Scalability: CAPEX/OPEX. Should we defer CAPEX until tenants take space?",
+      "How can we mitigate risk to ensure goals are met within budget & deadline?",
+      "Have we adequately considered Cyber Security and mitigated all associated risks?",
+      "Can vendors and delivery partners demonstrate their work in a live environment?"
+    ],
+    examples: [
+      "Create a detailed budget plan.",
+      "Consider vendors who offer Pay As You Lease models.",
+      "Engage the vendor to deliver a proof of concept on one floor before full rollout.",
+      "Ensure vendor hardware/software have been tested to current Cyber Security standards.",
+      "Prioritise our use case list, so we know what we can afford to lose."
+    ],
+    guidance: [
+      "New BAS installation: $2.50–$7.00 per sq ft depending on complexity",
+      "BAS upgrade/migration: $1.00–$4.00 per sq ft; Cloud analytics overlay: $0.01–$0.20 per sq ft annually",
+      "Typical payback: 3–7 years for BMS, 2–5 years for HVAC optimization, 1–3 years for sub-metering",
+      "Cybersecurity is not optional — NIST 800-53 provides a comprehensive framework for OT/IT convergence security",
+      "Consider CAPEX vs OPEX: subscription models (PaaS/SaaS) are emerging alongside traditional capital purchases"
+    ]
+  },
+  {
+    number: 5,
+    title: "Management & Delivery",
+    color: "#82b129",
+    tip: "Stakeholder alignment is the real challenge. IT, facilities, security, and operations all need a common version of reality before procurement begins.",
+    questions: [
+      "Who is responsible for managing the project and ensuring it is delivered on time and on budget?",
+      "Who are the key stakeholders and who can “sign off”?",
+      "Does a Master Systems Integrator or Smart Building Consultant need to be engaged?",
+      "Can we put sufficient processes in place to ensure proper installation, integration & commissioning?"
+    ],
+    examples: [
+      "Engage a consultant during the design phase to advise on system architecture and write the RFI documents.",
+      "Put in place procedures to double-check and validate all commissioning of systems."
+    ],
+    guidance: [
+      "Engage an MSI or smart building consultant during the design phase (RIBA Stage 2–3), not after procurement",
+      "Commissioning validation is as important as installation — put procedures in place to verify every system",
+      "Identify who has sign-off authority and ensure they understand the project scope early",
+      "Consider phased deployment: proof of concept on one floor before full building rollout",
+      "Document sequences of operation and control strategies before procurement"
+    ]
+  },
+  {
+    number: 6,
+    title: "Future-Proofing",
+    color: "#464545",
+    tip: "Equipment bought today may be installed years from now. Technology cycles are 3–5 years; buildings operate for decades. Insist on open standards and contractual upgrade provisions.",
+    questions: [
+      "How do we ensure that our investment in technology does not become obsolete too quickly?",
+      "Which systems (legacy or future) should the project interface or integrate with (interoperability)?",
+      "Who will be responsible for maintaining hardware (firmware upgrades) and/or upgrading, patching software?"
+    ],
+    examples: [
+      "Ensure partners are contractually required to adhere to open data standards.",
+      "Keep site-based technology focused on the end user and able to sustain Internet outages. Push complexity to the cloud.",
+      "Create internal procedures and supplier agreements so firmware and software patches are regularly applied."
+    ],
+    guidance: [
+      "Insist on open data standards: BACnet, MQTT, REST APIs, Project Haystack / Brick Schema",
+      "ASHRAE 223P is the convergence standard combining Haystack tagging + Brick ontology — ask vendors about support",
+      "Require contractual provisions for firmware updates, software patches, and cybersecurity maintenance",
+      "API-first architecture: ensure all systems expose data through documented, versioned APIs",
+      "Consider edge computing: keep site-based systems functional during internet outages, push analytics to the cloud"
+    ]
+  },
+  {
+    number: 7,
+    title: "Key Performance Indicators",
+    color: "#1b3660",
+    tip: "Include both quantitative metrics (specific objective data) and qualitative measures (feelings, opinions, experiences). If you can’t measure it, you can’t manage it.",
+    questions: [
+      "What values or metrics will be used to measure the success of our project?",
+      "When, and with what frequency will they be measured, and which are the most important?"
+    ],
+    examples: [
+      "Rental Yield Increased by X%",
+      "Tenant satisfaction increased by Y% (survey)",
+      "Certification Achieved (LEED Gold)",
+      "Energy Use Intensity reduced to Z kBtu/sq ft"
+    ],
+    guidance: [
+      "Energy Use Intensity (EUI): kBtu per sq ft per year — the standard benchmark for building energy performance",
+      "ENERGY STAR score (1–100): enables comparison with similar buildings nationally",
+      "Space utilization rate: especially important for hybrid work environments",
+      "Tenant satisfaction score: survey-based, measured at least annually",
+      "After-hours energy ratio (after-hours consumption / total consumption) — a key efficiency metric"
+    ]
+  }
+];
+
+// ─── State ────────────────────────────────────────────────
+const STORAGE_KEY = 'sbpc_state';
+
+function defaultState() {
+  const sections = {};
+  SECTIONS.forEach(s => { sections[s.number] = { notes: '', completed: false }; });
+  return {
+    project: { name: '', company: '', date: '', buildingType: '', buildingSize: '', buildingAge: '', location: '', projectType: '' },
+    outcomes: [],
+    technologies: [],
+    sections,
+    openSection: 1,
+    setupOpen: true
+  };
+}
+
+let state = defaultState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      state = { ...defaultState(), ...saved, sections: { ...defaultState().sections, ...saved.sections } };
+    }
+  } catch (e) { /* ignore */ }
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+}
+
+// ─── Render ───────────────────────────────────────────────
+function renderSetup() {
+  document.getElementById('projectName').value = state.project.name;
+  document.getElementById('company').value = state.project.company;
+  document.getElementById('projectDate').value = state.project.date;
+  document.getElementById('buildingType').value = state.project.buildingType;
+  document.getElementById('buildingSize').value = state.project.buildingSize;
+  document.getElementById('buildingAge').value = state.project.buildingAge;
+  document.getElementById('location').value = state.project.location;
+  document.getElementById('projectType').value = state.project.projectType;
+
+  document.querySelectorAll('#outcomesGroup .checkbox-pill').forEach(pill => {
+    const val = pill.dataset.value;
+    const checked = state.outcomes.includes(val);
+    pill.classList.toggle('checked', checked);
+    pill.querySelector('input').checked = checked;
+  });
+  document.querySelectorAll('#techGroup .checkbox-pill').forEach(pill => {
+    const val = pill.dataset.value;
+    const checked = state.technologies.includes(val);
+    pill.classList.toggle('checked', checked);
+    pill.querySelector('input').checked = checked;
+  });
+
+  const body = document.getElementById('setupBody');
+  const chev = document.getElementById('setupChevron');
+  body.style.display = state.setupOpen ? '' : 'none';
+  chev.classList.toggle('open', state.setupOpen);
+}
+
+function renderSections() {
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+
+  SECTIONS.forEach(sec => {
+    const s = state.sections[sec.number];
+    const isOpen = state.openSection === sec.number;
+
+    const card = document.createElement('div');
+    card.className = 'card section-card';
+    card.id = 'section-' + sec.number;
+    card.style.setProperty('--section-color', sec.color);
+
+    card.innerHTML = `
+      <div class="section-header" onclick="toggleSection(${sec.number})">
+        <div class="section-num" style="background:${sec.color}">${sec.number}</div>
+        <div class="section-title">${sec.title}</div>
+        ${s.completed ? '<span class="section-badge">Complete</span>' : ''}
+        <svg class="section-chevron ${isOpen ? 'open' : ''}" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      ${isOpen ? `
+      <div class="section-body">
+        <div class="tip" style="background:${sec.color}12">
+          <span class="tip-icon">💡</span>
+          <span>${sec.tip}</span>
+        </div>
+
+        <div class="questions-heading">Key Questions to Consider</div>
+        <ul class="questions-list">
+          ${sec.questions.map(q => `<li>${q}</li>`).join('')}
+        </ul>
+
+        <button class="guidance-toggle" onclick="toggleGuidance(this, event)" style="color:${sec.color}">
+          <span class="arrow">▶</span> Skills-Informed Guidance
+        </button>
+        <div class="guidance-panel">
+          <ul class="guidance-list">
+            ${sec.guidance.map(g => `<li>${g}</li>`).join('')}
+          </ul>
+        </div>
+
+        <button class="examples-toggle" onclick="toggleExamples(this, event)">
+          <span class="arrow">▶</span> Example Outputs
+        </button>
+        <div class="examples-panel">
+          <ul class="examples-list">
+            ${sec.examples.map(e => `<li>${e}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="notes-label">
+          <span>Your Notes</span>
+          <span class="char-count">${s.notes.length > 0 ? s.notes.length + ' chars' : ''}</span>
+        </div>
+        <textarea class="notes-area"
+          placeholder="Capture your decisions, requirements, and context for this section…"
+          oninput="updateNotes(${sec.number}, this)">${s.notes}</textarea>
+
+        <div class="section-actions">
+          <button class="btn-complete ${s.completed ? 'done' : ''}"
+            style="--section-color:${sec.color};border-color:${sec.color};${s.completed ? 'background:' + sec.color : 'color:' + sec.color}"
+            onclick="toggleComplete(${sec.number})">
+            ${s.completed ? '✓ Completed' : 'Mark Complete'}
+          </button>
+        </div>
+      </div>` : ''}
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderProgress() {
+  const bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  let done = 0;
+  SECTIONS.forEach(sec => {
+    const s = state.sections[sec.number];
+    if (s.completed) done++;
+    const seg = document.createElement('div');
+    seg.className = 'progress-seg' + (s.completed ? ' done' : '');
+    seg.style.background = sec.color;
+    seg.title = sec.number + '. ' + sec.title + (s.completed ? ' ✓' : '');
+    seg.onclick = () => { state.openSection = sec.number; saveState(); renderSections(); document.getElementById('section-' + sec.number).scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    bar.appendChild(seg);
+  });
+  document.getElementById('progressCount').textContent = done + ' / 7';
+}
+
+function renderAll() {
+  renderSetup();
+  renderSections();
+  renderProgress();
+}
+
+// ─── Interactions ─────────────────────────────────────────
+function toggleSetup() {
+  state.setupOpen = !state.setupOpen;
+  saveState();
+  renderSetup();
+}
+
+function toggleSection(num) {
+  state.openSection = state.openSection === num ? null : num;
+  saveState();
+  renderSections();
+}
+
+function toggleGuidance(btn, e) {
+  e.stopPropagation();
+  const panel = btn.nextElementSibling;
+  const arrow = btn.querySelector('.arrow');
+  const isOpen = panel.classList.toggle('open');
+  arrow.classList.toggle('open', isOpen);
+}
+
+function toggleExamples(btn, e) {
+  e.stopPropagation();
+  const panel = btn.nextElementSibling;
+  const arrow = btn.querySelector('.arrow');
+  const isOpen = panel.classList.toggle('open');
+  arrow.classList.toggle('open', isOpen);
+}
+
+function updateNotes(num, textarea) {
+  state.sections[num].notes = textarea.value;
+  const label = textarea.parentElement.querySelector('.char-count');
+  label.textContent = textarea.value.length > 0 ? textarea.value.length + ' chars' : '';
+  saveState();
+}
+
+function toggleComplete(num) {
+  state.sections[num].completed = !state.sections[num].completed;
+  saveState();
+  renderSections();
+  renderProgress();
+}
+
+// Setup field bindings
+function bindSetupFields() {
+  const fields = ['projectName','company','projectDate','buildingType','buildingSize','buildingAge','location','projectType'];
+  const keys = ['name','company','date','buildingType','buildingSize','buildingAge','location','projectType'];
+  fields.forEach((id, i) => {
+    document.getElementById(id).addEventListener('input', function() {
+      state.project[keys[i]] = this.value;
+      saveState();
+    });
+    document.getElementById(id).addEventListener('change', function() {
+      state.project[keys[i]] = this.value;
+      saveState();
+    });
+  });
+}
+
+function bindCheckboxPills() {
+  document.querySelectorAll('#outcomesGroup .checkbox-pill').forEach(pill => {
+    pill.addEventListener('click', function(e) {
+      e.preventDefault();
+      const val = this.dataset.value;
+      const idx = state.outcomes.indexOf(val);
+      if (idx === -1) state.outcomes.push(val); else state.outcomes.splice(idx, 1);
+      this.classList.toggle('checked', idx === -1);
+      this.querySelector('input').checked = idx === -1;
+      saveState();
+    });
+  });
+  document.querySelectorAll('#techGroup .checkbox-pill').forEach(pill => {
+    pill.addEventListener('click', function(e) {
+      e.preventDefault();
+      const val = this.dataset.value;
+      const idx = state.technologies.indexOf(val);
+      if (idx === -1) state.technologies.push(val); else state.technologies.splice(idx, 1);
+      this.classList.toggle('checked', idx === -1);
+      this.querySelector('input').checked = idx === -1;
+      saveState();
+    });
+  });
+}
+
+// ─── Export ───────────────────────────────────────────────
+function labelFor(selectId, value) {
+  if (!value) return 'Not specified';
+  return document.querySelector(`#${selectId} option[value="${value}"]`)?.textContent || value;
+}
+
+function buildBrief() {
+  const p = state.project;
+  const buildingTypeLabel = labelFor('buildingType', p.buildingType);
+  const buildingAgeLabel = labelFor('buildingAge', p.buildingAge);
+  const projectTypeLabel = labelFor('projectType', p.projectType);
+
+  const outcomeLabels = state.outcomes.map(o => SKILLS.outcomes[o]?.title || o);
+  const techLabels = state.technologies.map(t => SKILLS.technologies[t]?.title || t);
+
+  let brief = `# The Smart Building RFI Canvas — AI Brief
+
+## Instructions for AI Assistant
+
+You are helping generate a formal Request for Information (RFI) document for a commercial building technology procurement project. Use the project details, canvas notes, and domain knowledge below as your primary input.
+
+Key principles:
+- Frame all requirements as business outcomes, not technology specifications
+- This is an RFI (Request for Information), not an RFP — we are asking vendors to describe capabilities, not prescribing solutions
+- Follow the outcomes-based procurement approach
+- Include future-proofing and technology lifecycle questions
+- Write in language that IT, facilities, security, and C-suite stakeholders can all align on
+
+---
+
+## Project Details
+
+| Field | Value |
+|-------|-------|
+| Project Name | ${p.name || 'Not specified'} |
+| Company | ${p.company || 'Not specified'} |
+| Date | ${p.date || 'Not specified'} |
+| Building Type | ${buildingTypeLabel} |
+| Building Size | ${p.buildingSize ? p.buildingSize + ' sq ft' : 'Not specified'} |
+| Building Age | ${buildingAgeLabel} |
+| Location | ${p.location || 'Not specified'} |
+| Project Type | ${projectTypeLabel} |
+| Desired Outcomes | ${outcomeLabels.length ? outcomeLabels.join(', ') : 'Not specified'} |
+| Technology Categories | ${techLabels.length ? techLabels.join(', ') : 'Not specified'} |
+
+---
+`;
+
+  SECTIONS.forEach(sec => {
+    const s = state.sections[sec.number];
+    brief += `
+## Canvas Section ${sec.number}: ${sec.title}
+
+${s.notes.trim() || '_No notes entered for this section._'}
+`;
+  });
+
+  brief += `
+---
+
+## Domain Knowledge
+
+The following research-backed domain knowledge is relevant to this project. Use it to inform the RFI content, tailor vendor questions, and provide industry-specific context.
+
+`;
+
+  // Building type knowledge
+  const bt = SKILLS.buildingTypes[p.buildingType];
+  if (bt) {
+    brief += `### Building Type: ${bt.title}
+
+${bt.summary}
+
+**Key priorities for this building type:**
+${bt.priorities.map(p => '- ' + p).join('\n')}
+
+**Relevant RFI use cases:**
+${bt.rfiUseCases.map(u => '- ' + u).join('\n')}
+
+**KPIs to include:**
+${bt.kpis.map(k => '- ' + k).join('\n')}
+
+`;
+  }
+
+  // Outcome knowledge
+  if (state.outcomes.length) {
+    brief += `### Selected Outcomes\n\n`;
+    state.outcomes.forEach(key => {
+      const o = SKILLS.outcomes[key];
+      if (!o) return;
+      brief += `#### ${o.title}
+
+${o.summary}
+
+**Benchmarks:** ${o.benchmarks}
+
+**Technology priorities for this outcome:**
+${o.techPriorities.map(t => '- ' + t).join('\n')}
+
+`;
+    });
+  }
+
+  // Technology knowledge
+  if (state.technologies.length) {
+    brief += `### Selected Technologies\n\n`;
+    state.technologies.forEach(key => {
+      const t = SKILLS.technologies[key];
+      if (!t) return;
+      brief += `#### ${t.title}
+
+${t.summary}
+
+**Cost benchmarks:** ${t.costs}
+
+**Key RFI questions to ask vendors:**
+${t.rfiQuestions.map(q => '- ' + q).join('\n')}
+
+**Red flags in vendor responses:**
+${t.redFlags.map(r => '- ' + r).join('\n')}
+
+**Evaluation criteria:** ${t.evaluationCriteria}
+
+`;
+    });
+  }
+
+  brief += `---
+
+## Requested RFI Structure
+
+Please generate an RFI document with the following ${SKILLS.rfiStructure.length} sections:
+
+`;
+
+  SKILLS.rfiStructure.forEach((sec, i) => {
+    brief += `${i + 1}. **${sec.title}** — ${sec.guidance}\n`;
+  });
+
+  brief += `
+For each section, generate structured questions that vendors must answer. Use character-limited fields, tiered rating scales (Low/Medium/High), and readiness level taxonomies where appropriate.
+
+The RFI should be modeled on the GSA Green Proving Ground RFI structure (structured questions, character limits, dropdowns alongside free-text fields).
+`;
+
+  return brief;
+}
+
+function exportBrief() {
+  const brief = buildBrief();
+  navigator.clipboard.writeText(brief).then(() => {
+    showToast('AI brief copied to clipboard');
+  }).catch(() => {
+    showToast('Failed to copy — try the download option');
+  });
+}
+
+function previewBrief() {
+  const brief = buildBrief();
+  document.getElementById('previewContent').textContent = brief;
+  document.getElementById('previewModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('previewModal').classList.remove('open');
+}
+
+function downloadBrief() {
+  const brief = buildBrief();
+  const name = state.project.name ? state.project.name.replace(/[^a-zA-Z0-9]/g, '_') : 'smart_building';
+  const blob = new Blob([brief], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name + '_rfi_brief.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Brief downloaded');
+}
+
+function clearAll() {
+  if (!confirm('Clear all project data and notes? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state = defaultState();
+  renderAll();
+  showToast('All data cleared');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ─── Init ─────────────────────────────────────────────────
+loadState();
+if (!state.project.date) state.project.date = new Date().toISOString().split('T')[0];
+renderAll();
+bindSetupFields();
+bindCheckboxPills();
+
+// Close modal on overlay click
+document.getElementById('previewModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+
+</body>
+</html>
